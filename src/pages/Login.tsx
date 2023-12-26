@@ -1,14 +1,30 @@
 import { FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { axiosInstance } from "../axiosIntance";
+import { HOME } from "../constants/routes";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const submitLogin = (e: FormEvent) => {
     e.preventDefault();
-    console.log("username: ", username);
-    console.log("password: ", password);
+    e.preventDefault();
+    if (!username || !password) {
+      return alert("Please fill in all fields");
+    }
+    axiosInstance
+      .post("/auth/login", {
+        email: username,
+        password,
+      })
+      .then(() => {
+        navigate(HOME);
+      })
+      .catch((err) => {
+        alert(err.response.data.message || "Something went wrong! Try again");
+      });
   };
 
   return (

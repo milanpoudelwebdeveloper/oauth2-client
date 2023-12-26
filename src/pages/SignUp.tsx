@@ -1,14 +1,29 @@
 import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
+import { axiosInstance } from "../axiosIntance";
 
 const Register = () => {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const submitRegister = (e: FormEvent) => {
     e.preventDefault();
-    console.log("username: ", username);
-    console.log("password: ", password);
+    if (!username || !email || !password) {
+      return alert("Please fill in all fields");
+    }
+    axiosInstance
+      .post("/auth/register", {
+        username,
+        email,
+        password,
+      })
+      .then((res) => {
+        alert(res.data.message);
+      })
+      .catch((err) => {
+        alert(err.response.data.message || "Something went wrong! Try again");
+      });
   };
   return (
     <div className="container">
@@ -16,15 +31,24 @@ const Register = () => {
       <div className="form-container">
         <form onSubmit={submitRegister}>
           <input
+            type="email"
+            placeholder="Email"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            className="form-input"
+          />
+          <input
             type="text"
-            placeholder="Username or Email"
+            placeholder="Username"
             onChange={(e) => setUsername(e.target.value)}
+            value={username}
             className="form-input"
           />
           <input
             type="password"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
+            value={password}
             className="form-input"
           />
           <button type="submit" className="action-button">
